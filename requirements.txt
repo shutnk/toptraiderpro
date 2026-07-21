@@ -1,0 +1,6 @@
+python-telegram-bot
+aiohttp
+flask
+gunicorn
+pandas
+numpy
