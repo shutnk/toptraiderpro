@@ -1,4 +1,3 @@
-import asyncio
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler
 
@@ -26,12 +25,17 @@ async def deals(update: Update, context):
         "📈 *Активные B2B-сделки:*\n• Купить BTC на Binance → продать на Bybit (профит 0.4%)\n• Купить ETH на OKX → продать на Kraken (профит 0.6%)"
     )
 
-async def main():
+def main():
+    # Создаём приложение
     app = Application.builder().token(TOKEN).build()
+    
+    # Добавляем обработчики
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CallbackQueryHandler(spots, pattern="spots"))
     app.add_handler(CallbackQueryHandler(deals, pattern="deals"))
-    await app.run_polling()
+    
+    # ЗАПУСК БЕЗ ASYNCIO.RUN (это решит ошибку)
+    app.run_polling()
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
