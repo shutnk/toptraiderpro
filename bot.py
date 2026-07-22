@@ -26,16 +26,13 @@ async def deals(update: Update, context):
     )
 
 def main():
-    # Создаём приложение
     app = Application.builder().token(TOKEN).build()
-    
-    # Добавляем обработчики
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CallbackQueryHandler(spots, pattern="spots"))
     app.add_handler(CallbackQueryHandler(deals, pattern="deals"))
     
-    # ЗАПУСК БЕЗ ASYNCIO.RUN (это решит ошибку)
-    app.run_polling()
+    # ВАЖНО: Добавляем drop_pending_updates=True
+    app.run_polling(drop_pending_updates=True)
 
 if __name__ == "__main__":
     main()
