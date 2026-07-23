@@ -1,6 +1,7 @@
 from flask import Flask, request
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler
+import os
 
 TOKEN = "8780787804:AAEyBdPF1gt1ayWcKeHwS86KPZ6fpA4HR2U"
 
@@ -44,10 +45,22 @@ def webhook():
     bot_app.process_update(update)
     return "OK", 200
 
-# Запуск Webhook при старте
-@app.before_first_request
+# Главная страница (для проверки)
+@app.route("/")
+def home():
+    return "Bot is running!", 200
+
+# Настройка вебхука при запуске (вместо before_first_request)
 def setup_webhook():
-    bot_app.bot.set_webhook(url="https://toptraiderpro.up.railway.app/webhook")
+    try:
+        # Сбрасываем старые вебхуки и ставим новый
+        bot_app.bot.set_webhook(url="https://toptraiderpro.up.railway.app/webhook", drop_pending_updates=True)
+        print("✅ Webhook установлен успешно!")
+    except Exception as e:
+        print(f"❌ Ошибка установки webhook: {e}")
 
 if __name__ == "__main__":
+    # Сначала устанавливаем вебхук
+    setup_webhook()
+    # Затем запускаем Flask
     app.run(host="0.0.0.0", port=8080)
