@@ -51,6 +51,7 @@ if __name__ == "__main__":
         url="https://toptraiderpro.up.railway.app/webhook", 
         drop_pending_updates=True
     ))
-    print("✅ Webhook установлен успешно! Запускаю сервер...")
-    # Запускаем встроенный сервер Flask на порту 8080
-    app.run(host="0.0.0.0", port=8080)
+    print("✅ Webhook установлен успешно! Бот готов к работе.")
+    
+    # ВАЖНО: Мы не запускаем app.run(), мы просто выходим.
+    # Railway сам подхватит gunicorn из Procfile и будет держать его вечно.
