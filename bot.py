@@ -2,6 +2,7 @@ from flask import Flask, request
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler
 import asyncio
+import threading
 
 TOKEN = "8780787804:AAEyBdPF1gt1ayWcKeHwS86KPZ6fpA4HR2U"
 
@@ -44,6 +45,9 @@ def webhook():
 def home():
     return "Bot is running!", 200
 
+def run_flask():
+    app.run(host="0.0.0.0", port=8080)
+
 if __name__ == "__main__":
     print("🔄 Устанавливаю Webhook...")
     asyncio.run(bot_app.bot.set_webhook(
@@ -51,3 +55,11 @@ if __name__ == "__main__":
         drop_pending_updates=True
     ))
     print("✅ Webhook установлен успешно! Бот готов.")
+    
+    # Запускаем Flask в отдельном потоке
+    flask_thread = threading.Thread(target=run_flask, daemon=True)
+    flask_thread.start()
+    
+    # Держим основной процесс живым
+    while True:
+        pass
