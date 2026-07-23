@@ -56,10 +56,10 @@ if __name__ == "__main__":
     ))
     print("✅ Webhook установлен успешно! Бот готов.")
     
-    # Запускаем Flask в отдельном потоке
+    # Запускаем Flask в фоновом потоке
     flask_thread = threading.Thread(target=run_flask, daemon=True)
     flask_thread.start()
     
-    # Держим основной процесс живым
+    # Держим основной процесс живым (вечный цикл)
     while True:
         pass
