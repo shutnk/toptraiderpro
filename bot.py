@@ -44,16 +44,14 @@ def webhook():
 def home():
     return "Bot is running!", 200
 
-async def setup_webhook():
-    try:
-        await bot_app.bot.set_webhook(
-            url="https://toptraiderpro.up.railway.app/webhook", 
-            drop_pending_updates=True
-        )
-        print("✅ Webhook установлен успешно!")
-    except Exception as e:
-        print(f"❌ Ошибка установки webhook: {e}")
+# ВАЖНО: Синхронно устанавливаем вебхук перед запуском сервера
+print("🔄 Устанавливаю Webhook...")
+asyncio.run(bot_app.bot.set_webhook(
+    url="https://toptraiderpro.up.railway.app/webhook", 
+    drop_pending_updates=True
+))
+print("✅ Webhook установлен успешно!")
 
+# ВАЖНО: Запускаем через Gunicorn, а не через app.run()
 if __name__ == "__main__":
-    asyncio.run(setup_webhook())
-    # ВАЖНО: Убрали app.run()! Gunicorn сам запустит Flask.
+    app.run(host="0.0.0.0", port=8080)
