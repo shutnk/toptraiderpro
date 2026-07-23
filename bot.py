@@ -2,7 +2,6 @@ from flask import Flask, request
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler
 import asyncio
-import os
 
 TOKEN = "8780787804:AAEyBdPF1gt1ayWcKeHwS86KPZ6fpA4HR2U"
 
@@ -51,7 +50,4 @@ if __name__ == "__main__":
         url="https://toptraiderpro.up.railway.app/webhook", 
         drop_pending_updates=True
     ))
-    print("✅ Webhook установлен успешно! Бот готов к работе.")
-    
-    # ВАЖНО: Мы не запускаем app.run(), мы просто выходим.
-    # Railway сам подхватит gunicorn из Procfile и будет держать его вечно.
+    print("✅ Webhook установлен успешно! Бот готов.")
