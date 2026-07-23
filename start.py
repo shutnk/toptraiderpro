@@ -2,8 +2,8 @@ from flask import Flask, request
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler
 import asyncio
-import signal
-import sys
+import threading
+import time
 
 TOKEN = "8780787804:AAEyBdPF1gt1ayWcKeHwS86KPZ6fpA4HR2U"
 
@@ -47,14 +47,9 @@ def home():
     return "Bot is running!", 200
 
 def run_flask():
-    app.run(host="0.0.0.0", port=8080)
-
-def handle_exit(sig, frame):
-    print("Выход...")
-    sys.exit(0)
+    app.run(host="0.0.0.0", port=8080, debug=False, use_reloader=False)
 
 if __name__ == "__main__":
-    signal.signal(signal.SIGTERM, handle_exit)  # Обработка остановки
     print("🔄 Устанавливаю Webhook...")
     asyncio.run(bot_app.bot.set_webhook(
         url="https://toptraiderpro.up.railway.app/webhook", 
@@ -62,17 +57,12 @@ if __name__ == "__main__":
     ))
     print("✅ Webhook установлен успешно! Бот готов.")
     
-    # Запускаем Flask в фоновом потоке
-    import threading
+    # Запускаем веб-сервер в отдельном потоке
     flask_thread = threading.Thread(target=run_flask, daemon=True)
     flask_thread.start()
     
-    # Блокируем главный поток, пока не будет сигнал на выход
-    print("🟢 Бот работает. Ожидание...")
-    try:
-        signal.pause()  # Это держит процесс открытым и не грузит CPU!
-    except AttributeError:
-        # Если signal.pause не поддерживается, ждем вручную
-        import time
-        while True:
-            time.sleep(1)
+    print("🟢 Бот работает. Ожидание команд...")
+    
+    # Держим процесс живым
+    while True:
+        time.sleep(10)
