@@ -2,14 +2,10 @@ from flask import Flask, request
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler
 import asyncio
-import os
 
 TOKEN = "8780787804:AAEyBdPF1gt1ayWcKeHwS86KPZ6fpA4HR2U"
 
-# Создаём приложение Flask
 app = Flask(__name__)
-
-# Создаём бота
 bot_app = Application.builder().token(TOKEN).build()
 
 async def start(update: Update, context):
@@ -34,24 +30,20 @@ async def deals(update: Update, context):
         "📈 *Активные B2B-сделки:*\n• Купить BTC на Binance → продать на Bybit (профит 0.4%)\n• Купить ETH на OKX → продать на Kraken (профит 0.6%)"
     )
 
-# Добавляем обработчики
 bot_app.add_handler(CommandHandler("start", start))
 bot_app.add_handler(CallbackQueryHandler(spots, pattern="spots"))
 bot_app.add_handler(CallbackQueryHandler(deals, pattern="deals"))
 
-# Flask роут для приёма обновлений от Telegram
 @app.route("/webhook", methods=["POST"])
 def webhook():
     update = Update.de_json(request.get_json(force=True), bot_app.bot)
     bot_app.process_update(update)
     return "OK", 200
 
-# Главная страница
 @app.route("/")
 def home():
     return "Bot is running!", 200
 
-# Асинхронная функция установки вебхука
 async def setup_webhook():
     try:
         await bot_app.bot.set_webhook(
@@ -62,9 +54,6 @@ async def setup_webhook():
     except Exception as e:
         print(f"❌ Ошибка установки webhook: {e}")
 
-# Запуск при старте
 if __name__ == "__main__":
-    # Запускаем асинхронную функцию
     asyncio.run(setup_webhook())
-    # Запускаем Flask на порту 8080 (Gunicorn сам управляет этим)
-    app.run(host="0.0.0.0", port=8080)
+    # ВАЖНО: Убрали app.run()! Gunicorn сам запустит Flask.
