@@ -2,6 +2,7 @@ from flask import Flask, request
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler
 import asyncio
+import os
 
 TOKEN = "8780787804:AAEyBdPF1gt1ayWcKeHwS86KPZ6fpA4HR2U"
 
@@ -44,14 +45,12 @@ def webhook():
 def home():
     return "Bot is running!", 200
 
-# ВАЖНО: Синхронно устанавливаем вебхук перед запуском сервера
-print("🔄 Устанавливаю Webhook...")
-asyncio.run(bot_app.bot.set_webhook(
-    url="https://toptraiderpro.up.railway.app/webhook", 
-    drop_pending_updates=True
-))
-print("✅ Webhook установлен успешно!")
-
-# ВАЖНО: Запускаем через Gunicorn, а не через app.run()
 if __name__ == "__main__":
+    print("🔄 Устанавливаю Webhook...")
+    asyncio.run(bot_app.bot.set_webhook(
+        url="https://toptraiderpro.up.railway.app/webhook", 
+        drop_pending_updates=True
+    ))
+    print("✅ Webhook установлен успешно! Запускаю сервер...")
+    # Запускаем встроенный сервер Flask на порту 8080
     app.run(host="0.0.0.0", port=8080)
