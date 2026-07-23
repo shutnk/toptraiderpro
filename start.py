@@ -46,9 +46,6 @@ def webhook():
 def home():
     return "Bot is running!", 200
 
-def run_flask():
-    app.run(host="0.0.0.0", port=8080, debug=False, use_reloader=False)
-
 if __name__ == "__main__":
     print("🔄 Устанавливаю Webhook...")
     asyncio.run(bot_app.bot.set_webhook(
@@ -57,12 +54,5 @@ if __name__ == "__main__":
     ))
     print("✅ Webhook установлен успешно! Бот готов.")
     
-    # Запускаем веб-сервер в отдельном потоке
-    flask_thread = threading.Thread(target=run_flask, daemon=True)
-    flask_thread.start()
-    
-    print("🟢 Бот работает. Ожидание команд...")
-    
-    # Держим процесс живым
-    while True:
-        time.sleep(10)
+    # Мы НЕ запускаем app.run() здесь. Мы просто завершаем скрипт.
+    # Внешний Gunicorn подхватит переменную 'app' и запустит его правильно.
