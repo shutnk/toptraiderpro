@@ -1,6 +1,8 @@
 #!/bin/bash
-# Устанавливаем webhook (асинхронно) и запускаем бота в фоне
+
+# 1. Запускаем бота в фоновом режиме
 python bot.py &
 
-# Запускаем Gunicorn для Flask
-gunicorn bot:app --bind 0.0.0.0:8080 --timeout 120
+# 2. Запускаем Gunicorn в "foreground" (он будет держать контейнер открытым)
+# --timeout 0 означает "никогда не завершайся"
+gunicorn bot:app --bind 0.0.0.0:8080 --timeout 0 --log-level debug
