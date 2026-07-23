@@ -1,7 +1,14 @@
+from flask import Flask, request
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler
 
 TOKEN = "8780787804:AAEyBdPF1gt1ayWcKeHwS86KPZ6fpA4HR2U"
+
+# Создаём приложение Flask
+app = Flask(__name__)
+
+# Создаём бота
+bot_app = Application.builder().token(TOKEN).build()
 
 async def start(update: Update, context):
     keyboard = [
@@ -25,14 +32,22 @@ async def deals(update: Update, context):
         "📈 *Активные B2B-сделки:*\n• Купить BTC на Binance → продать на Bybit (профит 0.4%)\n• Купить ETH на OKX → продать на Kraken (профит 0.6%)"
     )
 
-def main():
-    app = Application.builder().token(TOKEN).build()
-    app.add_handler(CommandHandler("start", start))
-    app.add_handler(CallbackQueryHandler(spots, pattern="spots"))
-    app.add_handler(CallbackQueryHandler(deals, pattern="deals"))
-    
-    # ВАЖНО: Добавляем drop_pending_updates=True
-    app.run_polling(drop_pending_updates=True)
+# Добавляем обработчики
+bot_app.add_handler(CommandHandler("start", start))
+bot_app.add_handler(CallbackQueryHandler(spots, pattern="spots"))
+bot_app.add_handler(CallbackQueryHandler(deals, pattern="deals"))
+
+# Flask роут для приёма обновлений от Telegram
+@app.route("/webhook", methods=["POST"])
+def webhook():
+    update = Update.de_json(request.get_json(force=True), bot_app.bot)
+    bot_app.process_update(update)
+    return "OK", 200
+
+# Запуск Webhook при старте
+@app.before_first_request
+def setup_webhook():
+    bot_app.bot.set_webhook(url="https://toptraiderpro.up.railway.app/webhook")
 
 if __name__ == "__main__":
-    main()
+    app.run(host="0.0.0.0", port=8080)
